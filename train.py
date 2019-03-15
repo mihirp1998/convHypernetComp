@@ -86,14 +86,14 @@ def save(index, epoch=True):
     torch.save(hypernet.state_dict(), 'checkpoint100_100vids_wn/hypernet_{}_{:08d}.pth'.format(s, index))   
 
 #
-#resume()
+resume()
 
-scheduler = LS.MultiStepLR(solver, milestones=[30, 50, 70, 100, 120], gamma=0.5)
+scheduler = LS.MultiStepLR(solver, milestones=[50, 100, 200, 300, 400], gamma=0.5)
 
-#last_epoch = 0
+last_epoch = 100
 if args.checkpoint:
     resume(args.checkpoint)
-last_epoch = 650
+#last_epoch = 0
 scheduler.last_epoch = last_epoch - 1
 
 vepoch=0
