@@ -9,6 +9,8 @@ from PIL import Image
 import pickle
 import random
 from collections import defaultdict
+import glob
+from PIL import Image
 
 IMG_EXTENSIONS = [
     '.jpg',
@@ -125,3 +127,47 @@ class ImageFolder(data.Dataset):
 
     def __len__(self):
         return len(self.id_names)
+
+
+class face_forensics_dataloader(data.Dataset):
+    def __init__(self, data_path, mode, transform=None):
+        # /projects/katefgroup/datasets/faceforensics/original_sequences/youtube/c23/images
+        self.data_path = data_path
+        self.rgb_paths = []
+        filepath = os.path.join(self.data_path, mode+".txt")
+        fi = open(filepath, "r")
+        for line in fi.readlines():
+            line = line.strip()
+            img_dir_path = os.path.join(self.data_path, line)
+            rgb_paths = [img for img in glob.glob(img_dir_path + '/*.png')]
+            self.rgb_paths.extend(rgb_paths)
+
+        # self.rgb_paths = self.rgb_paths[0:1]
+        print("Found %s rgb images" %len(self.rgb_paths))
+        if transform != None:
+            self.transform = transform
+        else:
+            self.transform = transforms.Compose([
+                transforms.Resize((256,256)),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                    std=[0.229, 0.224, 0.225])
+            ])
+
+        
+    def __len__(self):
+        return len(self.rgb_paths)
+    
+    def __getitem__(self, index):
+
+        img = Image.open(self.rgb_paths[index]).convert('RGB')
+        img = self.transform(img)
+        img = img.float()
+        return img
+        
+
+
+
+
+
+

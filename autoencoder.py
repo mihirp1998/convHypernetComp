@@ -15,7 +15,7 @@ class UNet(nn.Module):
         depth=5,
         wf=6,
         padding=False,
-        batch_norm=False,
+        batch_norm=True,
         up_mode='upconv',
         use_skip_conns=False
     ):
